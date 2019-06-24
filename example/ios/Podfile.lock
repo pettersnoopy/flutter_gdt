@@ -1,0 +1,31 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_gdt (0.0.1):
+    - Flutter
+    - GDTMobSDK
+  - GDTMobSDK (4.10.2):
+    - GDTMobSDK/GDTMobSDK (= 4.10.2)
+  - GDTMobSDK/GDTMobSDK (4.10.2)
+
+DEPENDENCIES:
+  - Flutter (from `.symlinks/flutter/ios`)
+  - flutter_gdt (from `.symlinks/plugins/flutter_gdt/ios`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - GDTMobSDK
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: ".symlinks/flutter/ios"
+  flutter_gdt:
+    :path: ".symlinks/plugins/flutter_gdt/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
+  flutter_gdt: b6394a9ce2a82fa007ba4a5150dad1be88d418a6
+  GDTMobSDK: 6fde44a4f80c36051d5d879df8bb280034c31431
+
+PODFILE CHECKSUM: 7fb83752f59ead6285236625b82473f90b1cb932
+
+COCOAPODS: 1.6.2
