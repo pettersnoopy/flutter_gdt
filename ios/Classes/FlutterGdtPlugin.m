@@ -7,10 +7,21 @@
 
 @implementation FlutterGdtPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
+    FlutterMethodChannel* channel = [FlutterMethodChannel
+        methodChannelWithName:@"flutter_gdt"
+            binaryMessenger:[registrar messenger]];
+    FlutterGdtPlugin* instance = [[FlutterGdtPlugin alloc] init];
+    [registrar addMethodCallDelegate:instance channel:channel];
+
     [registrar registerViewFactory:[[GDTExpressAd alloc] initWithMessenger:registrar.messenger] withId:@"flutter_gdt_native_express_ad_view"];
 }
 
-
-
+- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+    if ([@"checkPermissions" isEqualToString:call.method]) {
+      result(@(YES));
+    } else {
+      result(FlutterMethodNotImplemented);
+    }
+}
 
 @end
