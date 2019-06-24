@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.version          = '0.0.1'
   s.summary          = 'A new flutter plugin project.'
   s.description      = <<-DESC
-  s.dependency 'GDTMobSDK' # 输入你想要的版本号
+
 A new flutter plugin project.
                        DESC
   s.homepage         = 'http://example.com'
@@ -16,7 +16,7 @@ A new flutter plugin project.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-
+  s.dependency 'GDTMobSDK'  # 输入你想要的版本号
   s.ios.deployment_target = '8.0'
 end
 

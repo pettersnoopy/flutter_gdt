@@ -1,20 +1,16 @@
 #import "FlutterGdtPlugin.h"
+#import "GDTExpressAd.h"
+
+@interface FlutterGdtPlugin ()
+
+@end
 
 @implementation FlutterGdtPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"flutter_gdt"
-            binaryMessenger:[registrar messenger]];
-  FlutterGdtPlugin* instance = [[FlutterGdtPlugin alloc] init];
-  [registrar addMethodCallDelegate:instance channel:channel];
+    [registrar registerViewFactory:[[GDTExpressAd alloc] initWithMessenger:registrar.messenger] withId:@"flutter_gdt_native_express_ad_view"];
 }
 
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"getPlatformVersion" isEqualToString:call.method]) {
-    result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
-  } else {
-    result(FlutterMethodNotImplemented);
-  }
-}
+
+
 
 @end
