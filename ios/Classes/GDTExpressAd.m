@@ -36,6 +36,7 @@
 @property (nonatomic, strong) NSArray *expressAdViews;
 @property (nonatomic, strong) GDTNativeExpressAd *nativeExpressAd;
 
+@property (nonatomic, strong) void (^callback)(BOOL result);
 @end
 
 @implementation FlutterGDTController
@@ -44,26 +45,21 @@
     FlutterMethodChannel* _channel;
     UIView * _adView;
     CGRect adFram;
+    NSString * placementId;
+    NSString *appId;
 }
 
 - (instancetype)initWithWithFrame:(CGRect)frame viewIdentifier:(int64_t)viewId arguments:(id)args binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
 {
     if ([super init]){
         NSDictionary *dic = args;
-        NSString *placementId = dic[@"placementId"];
-        NSString *appId = dic[@"appId"];
+        placementId = dic[@"placementId"];
+        appId = dic[@"appId"];
         adFram = CGRectMake(0, 0, [dic[@"width"] floatValue], [dic[@"height"]  floatValue]);
         
-        self.nativeExpressAd = [[GDTNativeExpressAd alloc] initWithAppId:appId placementId:placementId adSize:frame.size];
-        self.nativeExpressAd.delegate = self;
-        // 配置视频播放属性
-        //      self.nativeExpressAd.maxVideoDuration = (NSInteger)self.maxVideoDurationSlider.value;  // 如果需要设置视频最大时长，可以通过这个参数来进行设置
-        //      self.nativeExpressAd.videoAutoPlayOnWWAN = self.videoAutoPlaySwitch.on;
-        //      self.nativeExpressAd.videoMuted = self.videoMutedSwitch.on;
-        [self.nativeExpressAd loadAd:5];
         _adView = [[UIView alloc] init];
         _viewId = viewId;
-        NSString* channelName = [NSString stringWithFormat:@"flutter_gdt_native_express_ad_view%lld", viewId];
+        NSString* channelName = [NSString stringWithFormat:@"flutter_gdt_native_express_ad_view_%lld", viewId];
         _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
         __weak __typeof__(self) weakSelf = self;
         [_channel setMethodCallHandler:^(FlutterMethodCall *  call, FlutterResult  result) {
@@ -76,6 +72,18 @@
 -(void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result{
     if ([@"getPlatformVersion" isEqualToString:call.method]) {
         result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
+    } else if([@"showNativeExpressAd" isEqualToString:call.method]){
+        self.callback = ^(BOOL res) {
+            result(@(res));
+        };
+        self.nativeExpressAd = [[GDTNativeExpressAd alloc] initWithAppId:appId placementId:placementId adSize:adFram.size];
+        self.nativeExpressAd.delegate = self;
+        // 配置视频播放属性
+        //      self.nativeExpressAd.maxVideoDuration = (NSInteger)self.maxVideoDurationSlider.value;  // 如果需要设置视频最大时长，可以通过这个参数来进行设置
+        //      self.nativeExpressAd.videoAutoPlayOnWWAN = self.videoAutoPlaySwitch.on;
+        //      self.nativeExpressAd.videoMuted = self.videoMutedSwitch.on;
+        [self.nativeExpressAd loadAd:5];
+       
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -83,7 +91,6 @@
 
 - (UIView *)view
 {
-    NSLog(@"-----%@", _adView);
     return _adView;
 }
 
@@ -93,6 +100,10 @@
  */
 - (void)nativeExpressAdViewRenderSuccess:(GDTNativeExpressAdView *)nativeExpressAdView
 {
+//    if (self.callback) {
+    
+//    }
+//
     NSLog(@"nativeExpressAdViewRenderSuccess");
 }
 
@@ -101,26 +112,37 @@
  */
 - (void)nativeExpressAdViewRenderFail:(GDTNativeExpressAdView *)nativeExpressAdView
 {
+    self.callback(NO);
     NSLog(@"nativeExpressAdViewRenderFail");
 }
 
 -(void)nativeExpressAdFailToLoad:(GDTNativeExpressAd *)nativeExpressAd error:(NSError *)error
 {
+    self.callback(NO);
     NSLog(@"nativeExpressAdFailToLoad%@", error);
+}
+- (void)nativeExpressAdViewExposure:(GDTNativeExpressAdView *)nativeExpressAdView
+{
+    self.callback(YES);
+    NSLog(@"nativeExpressAdViewExposure");
 }
 
 - (void)nativeExpressAdSuccessToLoad:(GDTNativeExpressAd *)nativeExpressAd views:(NSArray<__kindof GDTNativeExpressAdView *> *)views
 {
+    if (views.count <= 0){
+        self.callback(NO);
+    }
     [self.expressAdViews enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         GDTNativeExpressAdView *adView = (GDTNativeExpressAdView *)obj;
         [adView removeFromSuperview];
     }];
     self.expressAdViews = [NSArray arrayWithArray:views];
+    
     if (self.expressAdViews.count) {
         [self.expressAdViews enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             UIWindow *window = [UIApplication sharedApplication].delegate.window;
             GDTNativeExpressAdView *expressView = (GDTNativeExpressAdView *)obj;
-            expressView.frame = adFram;
+            expressView.frame = self->adFram;
             expressView.controller = window.rootViewController;
             [expressView render];
         }];

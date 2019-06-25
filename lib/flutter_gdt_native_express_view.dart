@@ -53,8 +53,15 @@ class FlutterGdtBannerView extends StatelessWidget {
         "height": height,
       },
       creationParamsCodec: new StandardMessageCodec(),
-      onPlatformViewCreated: (int id) {
-        print("flutter_gdt_plugin: ios dart ios view created.");
+      onPlatformViewCreated: (int id) async {
+        final success =
+            await MethodChannel("flutter_gdt_native_express_ad_view_$id")
+                .invokeMethod("showNativeExpressAd");
+
+        if (adCallback != null) {
+          adCallback(success);
+        }
+        print("flutter_gdt_plugin: ios dart ios view created.$success--$id");
       },
     );
   }

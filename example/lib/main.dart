@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_gdt/flutter_gdt.dart';
+import 'package:flutter_gdt/flutter_gdt_native_express_view.dart';
 
 void main() => runApp(MyApp());
 
@@ -84,12 +85,12 @@ class _MyAppState extends State<MyApp> {
                 width: 310,
                 height: 487,
                 color: Colors.yellow,
-                child: GDTAdView(
+                child: FlutterGdtBannerView(
                   appId: '1106622311',
-                  placementId: '9080027978920719',
+                  positionId: '9080027978920719',
                   width: 310,
                   height: 487,
-                  onAdViewWidgetCreated: _onAdViewWidgetCreated,
+                  adCallback: _onAdViewWidgetCreated,
                 ),
               ),
             ),
