@@ -93,6 +93,7 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
 
     private class ExpressListener implements NativeExpressAD.NativeExpressADListener {
         private MethodChannel.Result mResult;
+        private boolean mFailed = false;
         public ExpressListener(MethodChannel.Result result) {
             mResult = result;
         }
@@ -117,7 +118,12 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
 
         @Override
         public void onRenderFail(NativeExpressADView nativeExpressADView) {
-
+          System.out.println("flutter_gdt_plugin: native express ad render failed.");
+          if (mFailed) {
+            return;
+          }
+          mFailed = true;
+          mResult.success(false);
         }
 
         @Override
@@ -158,6 +164,10 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
         @Override
         public void onNoAD(AdError adError) {
             System.out.println(adError.getErrorCode() + " | " + adError.getErrorMsg());
+            if (mFailed) {
+              return;
+            }
+            mFailed = true;
             mResult.success(false);
         }
     }

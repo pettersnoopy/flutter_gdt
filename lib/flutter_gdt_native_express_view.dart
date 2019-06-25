@@ -7,9 +7,10 @@ class FlutterGdtBannerView extends StatelessWidget {
   final String positionId;
   final num width;
   final num height;
+  final Function adCallback;
 
   FlutterGdtBannerView(
-      {this.appId, this.positionId, this.width, this.height});
+      {this.appId, this.positionId, this.width, this.height, this.adCallback});
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +29,16 @@ class FlutterGdtBannerView extends StatelessWidget {
   Widget _androidView() {
     return AndroidView(
       viewType: "flutter_gdt_native_express_ad_view",
-      onPlatformViewCreated: (id) {
-        MethodChannel(
+      onPlatformViewCreated: (id) async {
+        final success = await MethodChannel(
                 "flutter_gdt_native_express_ad_view_" + id.toString())
             .invokeMethod("showNativeExpressAd", {
           "appId": appId,
           "codeId": positionId,
         });
+        if (adCallback != null) {
+          adCallback(success);
+        }
       },
     );
   }
