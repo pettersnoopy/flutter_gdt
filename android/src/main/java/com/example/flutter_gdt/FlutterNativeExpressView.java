@@ -88,7 +88,7 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
             }
         }
 
-        mNativeExpressAdMap.get(codeId).loadAD(1);
+        mNativeExpressAdMap.get(codeId).loadAD(5);
     }
 
     private class ExpressListener implements NativeExpressAD.NativeExpressADListener {
@@ -113,7 +113,6 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
                 mLinearLayout.removeAllViews();
             }
             mLinearLayout.addView(mNativeExpressAdView);
-            mResult.success(true);
         }
 
         @Override
@@ -128,7 +127,7 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
 
         @Override
         public void onRenderSuccess(NativeExpressADView nativeExpressADView) {
-
+          mResult.success(true);
         }
 
         @Override
