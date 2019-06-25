@@ -29,13 +29,12 @@ class FlutterGdtBannerView extends StatelessWidget {
     return AndroidView(
       viewType: "flutter_gdt_native_express_ad_view",
       onPlatformViewCreated: (id) {
-        final resp = MethodChannel(
+        MethodChannel(
                 "flutter_gdt_native_express_ad_view_" + id.toString())
             .invokeMethod("showNativeExpressAd", {
           "appId": appId,
           "codeId": positionId,
         });
-        print(resp);
       },
     );
   }

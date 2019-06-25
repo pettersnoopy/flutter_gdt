@@ -1,7 +1,9 @@
 package com.example.flutter_gdt;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.qq.e.ads.nativ.ADSize;
@@ -35,6 +37,7 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
         this.mActivity = activity;
         if (mLinearLayout == null) {
             mLinearLayout = new LinearLayout(activity);
+            mLinearLayout.setBackgroundColor(Color.parseColor("#ffffff"));
         }
         if (mNativeExpressAdMap == null) {
             mNativeExpressAdMap = new HashMap<>();
