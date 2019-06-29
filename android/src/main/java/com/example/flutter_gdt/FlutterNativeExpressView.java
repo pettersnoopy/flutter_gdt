@@ -2,6 +2,7 @@ package com.example.flutter_gdt;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -37,7 +38,6 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
         this.mActivity = activity;
         if (mLinearLayout == null) {
             mLinearLayout = new LinearLayout(activity);
-            mLinearLayout.setBackgroundColor(Color.parseColor("#ffffff"));
         }
         if (mNativeExpressAdMap == null) {
             mNativeExpressAdMap = new HashMap<>();
@@ -60,7 +60,6 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
     public void onMethodCall(MethodCall methodCall, MethodChannel.Result result) {
         if ("showNativeExpressAd".equals(methodCall.method)) {
             showNativeExpressAd(methodCall, result);
-            return;
         }
     }
 
@@ -82,6 +81,16 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
                         expressHeight = (int) params.get("adHeight");
                     }
                 }
+
+                ViewGroup.LayoutParams layoutParams = mLinearLayout.getLayoutParams();
+                if (expressWidth > 0) {
+                    layoutParams.width = expressWidth;
+                }
+                if (expressHeight > 0) {
+                    layoutParams.height = expressHeight;
+                }
+                mLinearLayout.setLayoutParams(layoutParams);
+
                 mNativeExpressAdMap.put(codeId, new NativeExpressAD(mActivity, new ADSize(expressWidth, expressHeight), appId, codeId, new ExpressListener(result)));
             } catch (Exception e) {
                 System.out.println(e);
