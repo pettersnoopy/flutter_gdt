@@ -6,6 +6,10 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import com.example.flutter_gdt.managers.NativeExpressManager;
+import com.example.flutter_gdt.views.FlutterNativeExpressViewFactory;
+import com.qq.e.ads.nativ.ADSize;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +41,8 @@ public class FlutterGdtPlugin implements MethodCallHandler {
     public void onMethodCall(MethodCall call, Result result) {
         if ("checkPermissions".equals(call.method)) {
             this.checkPermission(call, result);
-            return;
+        } else if ("preloadNativeExpress".equals(call.method)) {
+            this.preloadNativeExpress(call, result);
         }
     }
 
@@ -52,15 +57,15 @@ public class FlutterGdtPlugin implements MethodCallHandler {
     @TargetApi(Build.VERSION_CODES.M)
     private void checkAndRequestPermission(Result result) {
         List<String> lackedPermission = new ArrayList<String>();
-        if (!(mActivity.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED)) {
+        if ((mActivity.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)) {
             lackedPermission.add(Manifest.permission.READ_PHONE_STATE);
         }
 
-        if (!(mActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+        if ((mActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
             lackedPermission.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
 
-        if (!(mActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
+        if ((mActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
             lackedPermission.add(Manifest.permission.ACCESS_FINE_LOCATION);
         }
 
@@ -74,5 +79,22 @@ public class FlutterGdtPlugin implements MethodCallHandler {
             lackedPermission.toArray(requestPermissions);
             mActivity.requestPermissions(requestPermissions, 1024);
         }
+    }
+
+    private void preloadNativeExpress(MethodCall call, Result result) {
+        String appId = call.argument("appId");
+        String posId = call.argument("positionId");
+        Object width = call.argument("width");
+        if (width == null) {
+            LogUtils.e(Consts.TAG, "no ad width");
+            return;
+        }
+
+        Object height = call.argument("height");
+        if (height == null) {
+            LogUtils.e(Consts.TAG, "no ad height");
+            return;
+        }
+        NativeExpressManager.getInstance().preloadNativeExpressAd(mActivity, appId, posId, new ADSize((int) width, (int) height));
     }
 }

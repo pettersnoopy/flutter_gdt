@@ -2,19 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class FlutterGdtBannerView extends StatelessWidget {
+class FlutterGdtExpressView extends StatelessWidget {
   final String appId;
   final String positionId;
   final num width;
   final num height;
   final Function adCallback;
 
-  FlutterGdtBannerView(
-      {this.appId,
-      this.positionId,
-      this.width,
-      this.height,
-      this.adCallback});
+  FlutterGdtExpressView(
+      {this.appId, this.positionId, this.width, this.height, this.adCallback});
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +34,9 @@ class FlutterGdtBannerView extends StatelessWidget {
             "flutter_gdt_native_express_ad_view_" + id.toString());
         final success = await channel.invokeMethod("showNativeExpressAd", {
           "appId": appId,
-          "codeId": positionId,
-          "params": {
-            "adWidth": width * 3,
-            "adHeight": height * 3,
-          }
+          "positionId": positionId,
+          "width": width,
+          "height": height,
         });
         if (adCallback != null) {
           adCallback(success);

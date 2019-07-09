@@ -1,4 +1,4 @@
-package com.example.flutter_gdt;
+package com.example.flutter_gdt.views;
 
 import android.app.Activity;
 import android.content.Context;

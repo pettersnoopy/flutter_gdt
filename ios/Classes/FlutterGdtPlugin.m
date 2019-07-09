@@ -19,6 +19,8 @@
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"checkPermissions" isEqualToString:call.method]) {
       result(@(YES));
+    } else if ([@"preloadNativeExpress" isEqualToString:call.method]) {
+      result(@(YES));
     } else {
       result(FlutterMethodNotImplemented);
     }
