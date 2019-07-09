@@ -47,8 +47,8 @@ public class NativeExpressManager {
     private HashMap<String, ArrayList<NativeExpressADView>> mNativeExpressAdViewCache;
     private MethodChannel.Result mTmpResult;
 
-    public void preloadNativeExpressAd(Activity activity, String appId, String positionId, ADSize adSize) {
-        this.loadNativeExpressAd(activity, appId, positionId, adSize, null);
+    public void preloadNativeExpressAd(Activity activity, String appId, String positionId, ADSize adSize, int preloadCount) {
+        this.loadNativeExpressAd(activity, appId, positionId, adSize, preloadCount, null);
     }
 
     public void getNativeExpressView(
@@ -56,6 +56,7 @@ public class NativeExpressManager {
             String appId,
             final String positionId,
             ADSize adSize,
+            int preloadCount,
             MethodChannel.Result result,
             NativeExpressViewGetCallback callback) {
         mTmpResult = result;
@@ -63,20 +64,19 @@ public class NativeExpressManager {
         ArrayList<NativeExpressADView> adViews = mNativeExpressAdViewCache.get(positionId);
         if (adViews != null && adViews.size() > 0) {
             if (callback != null) {
-                System.out.println("get view from cache.");
                 callback.viewGet(getAdView(positionId));
             }
 
-            if (adViews.size() <= 0) {
-                loadNativeExpressAd(activity, appId, positionId, adSize, null);
+            if (adViews.size() <= 0 && preloadCount > 0) {
+                loadNativeExpressAd(activity, appId, positionId, adSize, preloadCount, null);
             }
             return;
         }
 
-        loadNativeExpressAd(activity, appId, positionId, adSize, callback);
+        loadNativeExpressAd(activity, appId, positionId, adSize, preloadCount, callback);
     }
 
-    private void loadNativeExpressAd(Activity activity, String appId, final String positionId, ADSize adSize, final NativeExpressViewGetCallback callback) {
+    private void loadNativeExpressAd(Activity activity, String appId, final String positionId, ADSize adSize, int loadCount, final NativeExpressViewGetCallback callback) {
         if (mNativeExpressAdCache.get(positionId) == null) {
             mNativeExpressAdCache.put(positionId, new NativeExpressAD(activity, adSize, appId, positionId, new NativeExpressAD.NativeExpressADListener() {
                 @Override
@@ -84,7 +84,6 @@ public class NativeExpressManager {
                     putAdViewCache(positionId, list);
 
                     if (callback != null) {
-                        System.out.println("get view from server.");
                         callback.viewGet(getAdView(positionId));
                     }
                 }
@@ -139,7 +138,7 @@ public class NativeExpressManager {
         }
 
         NativeExpressAD nativeExpressAD = mNativeExpressAdCache.get(positionId);
-        nativeExpressAD.loadAD(2);
+        nativeExpressAD.loadAD(loadCount);
     }
 
     private void putAdViewCache(String posId, List<NativeExpressADView> list) {

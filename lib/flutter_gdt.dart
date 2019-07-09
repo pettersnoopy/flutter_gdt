@@ -13,6 +13,7 @@ class FlutterGdt {
       "positionId": param.positionId,
       "width": param.ptWidth,
       "height": param.ptHeight,
+      "preloadCount": param.preloadCount ?? 1,
     });
   }
 }
@@ -22,6 +23,7 @@ class NativeExpressParam {
   String positionId;
   int ptWidth;
   int ptHeight;
+  int preloadCount;
 
-  NativeExpressParam({this.appId, this.positionId, this.ptWidth, this.ptHeight});
+  NativeExpressParam({this.appId, this.positionId, this.ptWidth, this.ptHeight, this.preloadCount});
 }

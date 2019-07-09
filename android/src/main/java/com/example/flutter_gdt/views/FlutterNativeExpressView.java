@@ -62,48 +62,54 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
     }
   }
 
-    private void showNativeExpressAd(MethodCall call, MethodChannel.Result result) {
-        String appId = call.argument("appId");
-        String positionId = call.argument("positionId");
-        Object width = call.argument("width");
-        if (width == null) {
-            LogUtils.e(Consts.TAG, "no ad width");
-            return;
-        }
-
-        Object height = call.argument("height");
-        if (height == null) {
-            LogUtils.e(Consts.TAG, "no ad height");
-            return;
-        }
-
-        int expressWidth = (int) width;
-        int expressHeight = (int) height;
-
-        ViewGroup.LayoutParams layoutParams = mLinearLayout.getLayoutParams();
-        if (expressWidth > 0) {
-            layoutParams.width = Consts.dp2px(mActivity, expressWidth);
-        }
-        if (expressHeight > 0) {
-            layoutParams.height = Consts.dp2px(mActivity, expressHeight);
-        }
-        mLinearLayout.setLayoutParams(layoutParams);
-
-        LogUtils.i(Consts.TAG, "try get express View");
-
-        NativeExpressManager.getInstance().getNativeExpressView(mActivity, appId, positionId, new ADSize(expressWidth, expressHeight), result, new NativeExpressManager.NativeExpressViewGetCallback() {
-            @Override
-            public void viewGet(NativeExpressADView view) {
-              System.out.println("view getted.");
-                view.render();
-                mLinearLayout.removeAllViews();
-                mLinearLayout.addView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            }
-
-            @Override
-            public void viewGetError(int code, String reason) {
-                LogUtils.e(Consts.TAG, "error: code: " + code + " ,reason: " + reason);
-            }
-        });
+  private void showNativeExpressAd(MethodCall call, MethodChannel.Result result) {
+    String appId = call.argument("appId");
+    String positionId = call.argument("positionId");
+    Object width = call.argument("width");
+    if (width == null) {
+      LogUtils.e(Consts.TAG, "no ad width");
+      return;
     }
+
+    Object height = call.argument("height");
+    if (height == null) {
+      LogUtils.e(Consts.TAG, "no ad height");
+      return;
+    }
+
+    int expressWidth = (int) width;
+    int expressHeight = (int) height;
+
+    int preloadCount = Consts.DEFAULT_PRELOAD_COUNT;
+    Object preload = call.argument("preloadCount");
+    if (preload != null) {
+      preloadCount = (int) preload;
+    }
+
+    ViewGroup.LayoutParams layoutParams = mLinearLayout.getLayoutParams();
+    if (expressWidth > 0) {
+      layoutParams.width = Consts.dp2px(mActivity, expressWidth);
+    }
+    if (expressHeight > 0) {
+      layoutParams.height = Consts.dp2px(mActivity, expressHeight);
+    }
+    mLinearLayout.setLayoutParams(layoutParams);
+
+    NativeExpressManager.getInstance().getNativeExpressView(mActivity, appId, positionId,
+        new ADSize(expressWidth, expressHeight), preloadCount, result,
+        new NativeExpressManager.NativeExpressViewGetCallback() {
+          @Override
+          public void viewGet(NativeExpressADView view) {
+            view.render();
+            mLinearLayout.removeAllViews();
+            mLinearLayout.addView(view,
+                new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+          }
+
+          @Override
+          public void viewGetError(int code, String reason) {
+            LogUtils.e(Consts.TAG, "error: code: " + code + " ,reason: " + reason);
+          }
+        });
+  }
 }

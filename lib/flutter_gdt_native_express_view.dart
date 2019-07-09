@@ -7,10 +7,16 @@ class FlutterGdtExpressView extends StatelessWidget {
   final String positionId;
   final num width;
   final num height;
+  final num preloadCount;
   final Function adCallback;
 
   FlutterGdtExpressView(
-      {this.appId, this.positionId, this.width, this.height, this.adCallback});
+      {this.appId,
+      this.positionId,
+      this.width,
+      this.height,
+      this.preloadCount,
+      this.adCallback});
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +43,7 @@ class FlutterGdtExpressView extends StatelessWidget {
           "positionId": positionId,
           "width": width,
           "height": height,
+          "preloadCount": preloadCount ?? 1,
         });
         if (adCallback != null) {
           adCallback(success);

@@ -95,6 +95,13 @@ public class FlutterGdtPlugin implements MethodCallHandler {
             LogUtils.e(Consts.TAG, "no ad height");
             return;
         }
-        NativeExpressManager.getInstance().preloadNativeExpressAd(mActivity, appId, posId, new ADSize((int) width, (int) height));
+
+        int preloadCount = Consts.DEFAULT_PRELOAD_COUNT;
+        Object preload = call.argument("preloadCount");
+        if (preload != null) {
+            preloadCount = (int) preload;
+        }
+
+        NativeExpressManager.getInstance().preloadNativeExpressAd(mActivity, appId, posId, new ADSize((int) width, (int) height), preloadCount);
     }
 }
