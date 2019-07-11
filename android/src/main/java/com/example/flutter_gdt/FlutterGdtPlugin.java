@@ -54,20 +54,27 @@ public class FlutterGdtPlugin implements MethodCallHandler {
         }
     }
 
+    private ArrayList<String> getNeedPermissionList() {
+        ArrayList<String> lackedPermission = new ArrayList<String>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if ((mActivity.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)) {
+                lackedPermission.add(Manifest.permission.READ_PHONE_STATE);
+            }
+
+            if ((mActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
+                lackedPermission.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+
+            if ((mActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                lackedPermission.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            }
+        }
+        return lackedPermission;
+    }
+
     @TargetApi(Build.VERSION_CODES.M)
     private void checkAndRequestPermission(Result result) {
-        List<String> lackedPermission = new ArrayList<String>();
-        if ((mActivity.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)) {
-            lackedPermission.add(Manifest.permission.READ_PHONE_STATE);
-        }
-
-        if ((mActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)) {
-            lackedPermission.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-
-        if ((mActivity.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
-            lackedPermission.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
+        List<String> lackedPermission = getNeedPermissionList()
 
         // 权限都已经有了，那么直接调用SDK
         if (lackedPermission.size() == 0) {
@@ -82,6 +89,15 @@ public class FlutterGdtPlugin implements MethodCallHandler {
     }
 
     private void preloadNativeExpress(MethodCall call, Result result) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            List<String> lackedPermission = getNeedPermissionList();
+            if (lackedPermission.size() > 0) {
+                LogUtils.e(Consts.TAG, "no permission");
+                return;
+            }
+        }
+
+
         String appId = call.argument("appId");
         String posId = call.argument("positionId");
         Object width = call.argument("width");
