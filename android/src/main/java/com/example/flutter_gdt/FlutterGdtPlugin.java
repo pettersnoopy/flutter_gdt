@@ -74,7 +74,7 @@ public class FlutterGdtPlugin implements MethodCallHandler {
 
     @TargetApi(Build.VERSION_CODES.M)
     private void checkAndRequestPermission(Result result) {
-        List<String> lackedPermission = getNeedPermissionList()
+        List<String> lackedPermission = getNeedPermissionList();
 
         // 权限都已经有了，那么直接调用SDK
         if (lackedPermission.size() == 0) {
