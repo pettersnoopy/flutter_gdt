@@ -9,6 +9,7 @@
 
 #import "GDTNativeExpressAd.h"
 #import "GDTNativeExpressAdView.h"
+#import "GDTManager.h"
 
 @implementation GDTExpressAd
 {
@@ -73,16 +74,21 @@
     if ([@"getPlatformVersion" isEqualToString:call.method]) {
         result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
     } else if([@"showNativeExpressAd" isEqualToString:call.method]){
-        self.callback = ^(BOOL res) {
-            result(@(res));
-        };
-        self.nativeExpressAd = [[GDTNativeExpressAd alloc] initWithAppId:appId placementId:placementId adSize:adFram.size];
-        self.nativeExpressAd.delegate = self;
-        // 配置视频播放属性
-        //      self.nativeExpressAd.maxVideoDuration = (NSInteger)self.maxVideoDurationSlider.value;  // 如果需要设置视频最大时长，可以通过这个参数来进行设置
-        //      self.nativeExpressAd.videoAutoPlayOnWWAN = self.videoAutoPlaySwitch.on;
-        //      self.nativeExpressAd.videoMuted = self.videoMutedSwitch.on;
-        [self.nativeExpressAd loadAd:5];
+
+        if ([GDTManager sharedManager].gdtViews.count > 0){
+            [_adView addSubview:[GDTManager sharedManager].gdtViews[0]];
+            result(@(YES));
+        }
+        [[GDTManager sharedManager]loadAd];
+        
+        
+//        self.nativeExpressAd = [[GDTNativeExpressAd alloc] initWithAppId:appId placementId:placementId adSize:adFram.size];
+//        self.nativeExpressAd.delegate = self;
+//        // 配置视频播放属性
+//        //      self.nativeExpressAd.maxVideoDuration = (NSInteger)self.maxVideoDurationSlider.value;  // 如果需要设置视频最大时长，可以通过这个参数来进行设置
+//        //      self.nativeExpressAd.videoAutoPlayOnWWAN = self.videoAutoPlaySwitch.on;
+//        //      self.nativeExpressAd.videoMuted = self.videoMutedSwitch.on;
+//        [self.nativeExpressAd loadAd:5];
        
     } else {
         result(FlutterMethodNotImplemented);
@@ -94,59 +100,4 @@
     return _adView;
 }
 
-
-/**
- * 原生模板广告渲染成功, 此时的 nativeExpressAdView.size.height 根据 size.width 完成了动态更新。
- */
-- (void)nativeExpressAdViewRenderSuccess:(GDTNativeExpressAdView *)nativeExpressAdView
-{
-//    if (self.callback) {
-    
-//    }
-//
-    NSLog(@"nativeExpressAdViewRenderSuccess");
-}
-
-/**
- * 原生模板广告渲染失败
- */
-- (void)nativeExpressAdViewRenderFail:(GDTNativeExpressAdView *)nativeExpressAdView
-{
-    self.callback(NO);
-    NSLog(@"nativeExpressAdViewRenderFail");
-}
-
--(void)nativeExpressAdFailToLoad:(GDTNativeExpressAd *)nativeExpressAd error:(NSError *)error
-{
-    self.callback(NO);
-    NSLog(@"nativeExpressAdFailToLoad%@", error);
-}
-- (void)nativeExpressAdViewExposure:(GDTNativeExpressAdView *)nativeExpressAdView
-{
-    self.callback(YES);
-    NSLog(@"nativeExpressAdViewExposure");
-}
-
-- (void)nativeExpressAdSuccessToLoad:(GDTNativeExpressAd *)nativeExpressAd views:(NSArray<__kindof GDTNativeExpressAdView *> *)views
-{
-    if (views.count <= 0){
-        self.callback(NO);
-    }
-    [self.expressAdViews enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        GDTNativeExpressAdView *adView = (GDTNativeExpressAdView *)obj;
-        [adView removeFromSuperview];
-    }];
-    self.expressAdViews = [NSArray arrayWithArray:views];
-    
-    if (self.expressAdViews.count) {
-        [self.expressAdViews enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            UIWindow *window = [UIApplication sharedApplication].delegate.window;
-            GDTNativeExpressAdView *expressView = (GDTNativeExpressAdView *)obj;
-            expressView.frame = self->adFram;
-            expressView.controller = window.rootViewController;
-            [expressView render];
-        }];
-        [_adView addSubview:self.expressAdViews[0]];
-    }
-}
 @end

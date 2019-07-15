@@ -1,5 +1,6 @@
 #import "FlutterGdtPlugin.h"
 #import "GDTExpressAd.h"
+#import "GDTManager.h"
 
 @interface FlutterGdtPlugin ()
 
@@ -20,6 +21,8 @@
     if ([@"checkPermissions" isEqualToString:call.method]) {
       result(@(YES));
     } else if ([@"preloadNativeExpress" isEqualToString:call.method]) {
+        [GDTManager sharedManager].arguments = call.arguments;
+        [[GDTManager sharedManager] loadAd];
       result(@(YES));
     } else {
       result(FlutterMethodNotImplemented);

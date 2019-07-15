@@ -66,8 +66,8 @@ class FlutterGdtExpressView extends StatelessWidget {
         final success =
             await MethodChannel("flutter_gdt_native_express_ad_view_$id")
                 .invokeMethod("showNativeExpressAd");
-
         if (adCallback != null) {
+          print('-----adCallback');
           adCallback(success);
         }
         print("flutter_gdt_plugin: ios dart ios view created.$success--$id");
