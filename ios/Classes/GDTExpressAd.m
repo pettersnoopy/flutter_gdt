@@ -38,27 +38,30 @@
 @property (nonatomic, strong) GDTNativeExpressAd *nativeExpressAd;
 
 @property (nonatomic, strong) void (^callback)(BOOL result);
+@property (nonatomic, strong) UIView *adView;
 @end
 
 @implementation FlutterGDTController
 {
     int64_t _viewId;
     FlutterMethodChannel* _channel;
-    UIView * _adView;
+//    UIView * _adView;
     CGRect adFram;
     NSString * placementId;
     NSString *appId;
+    NSDictionary *arguments;
 }
 
 - (instancetype)initWithWithFrame:(CGRect)frame viewIdentifier:(int64_t)viewId arguments:(id)args binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger
 {
     if ([super init]){
         NSDictionary *dic = args;
-        placementId = dic[@"placementId"];
+        arguments = dic;
+        placementId = dic[@"positionId"];
         appId = dic[@"appId"];
         adFram = CGRectMake(0, 0, [dic[@"width"] floatValue], [dic[@"height"]  floatValue]);
         
-        _adView = [[UIView alloc] init];
+        self.adView = [[UIView alloc] init];
         _viewId = viewId;
         NSString* channelName = [NSString stringWithFormat:@"flutter_gdt_native_express_ad_view_%lld", viewId];
         _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
@@ -74,21 +77,26 @@
     if ([@"getPlatformVersion" isEqualToString:call.method]) {
         result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
     } else if([@"showNativeExpressAd" isEqualToString:call.method]){
-
-        if ([GDTManager sharedManager].gdtViews.count > 0){
-            [_adView addSubview:[GDTManager sharedManager].gdtViews[0]];
+        NSString *key = [NSString stringWithFormat:@"%@",placementId];
+        if ([[GDTManager sharedManager].gdtViewDict.allKeys containsObject:key]) {
+            [self.adView addSubview:[GDTManager sharedManager].gdtViewDict[key]];
             result(@(YES));
+            [[GDTManager sharedManager] loadAdWith:arguments callback:^(BOOL res) {
+                 NSLog(@"preload gdtad%@",@(res));
+            }];
+        } else {
+            __weak typeof(self) weakSelf = self;
+            [[GDTManager sharedManager] loadAdWith:arguments callback:^(BOOL res) {
+                if (res) {
+                    [weakSelf.adView addSubview:[GDTManager sharedManager].gdtViewDict[key]];
+                }
+                result(@(res));
+                [[GDTManager sharedManager] loadAdWith:self->arguments callback:^(BOOL res) {
+                    NSLog(@"preload gdtad%@",@(res));
+                }];
+            }];
         }
-        [[GDTManager sharedManager]loadAd];
-        
-        
-//        self.nativeExpressAd = [[GDTNativeExpressAd alloc] initWithAppId:appId placementId:placementId adSize:adFram.size];
-//        self.nativeExpressAd.delegate = self;
-//        // 配置视频播放属性
-//        //      self.nativeExpressAd.maxVideoDuration = (NSInteger)self.maxVideoDurationSlider.value;  // 如果需要设置视频最大时长，可以通过这个参数来进行设置
-//        //      self.nativeExpressAd.videoAutoPlayOnWWAN = self.videoAutoPlaySwitch.on;
-//        //      self.nativeExpressAd.videoMuted = self.videoMutedSwitch.on;
-//        [self.nativeExpressAd loadAd:5];
+       
        
     } else {
         result(FlutterMethodNotImplemented);
@@ -97,7 +105,7 @@
 
 - (UIView *)view
 {
-    return _adView;
+    return self.adView;
 }
 
 @end

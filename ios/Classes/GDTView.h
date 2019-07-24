@@ -1,22 +1,17 @@
 //
-//  GDTManager.h
+//  GDTView.h
 //  barcode_scan
 //
-//  Created by 杜金彩 on 2019/7/15.
+//  Created by 杜金彩 on 2019/7/24.
 //
 
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface GDTManager : NSObject
-
-@property (nonatomic, strong) NSMutableDictionary *gdtViewDict;
-
-+ (instancetype)sharedManager;
-
+@interface GDTView : NSObject
+- (instancetype)initWith:(NSDictionary *)arguments;
 - (void)loadAdWith:(NSDictionary *)arguments callback:(void(^)(BOOL result))callback;
-
 
 @end
 

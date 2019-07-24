@@ -57,7 +57,7 @@ class FlutterGdtExpressView extends StatelessWidget {
       viewType: "flutter_gdt_native_express_ad_view",
       creationParams: <String, dynamic>{
         "appId": appId,
-        "placementId": positionId,
+        "positionId": positionId,
         "width": width,
         "height": height,
       },

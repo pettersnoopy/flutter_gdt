@@ -2,10 +2,6 @@
 #import "GDTExpressAd.h"
 #import "GDTManager.h"
 
-@interface FlutterGdtPlugin ()
-
-@end
-
 @implementation FlutterGdtPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
@@ -21,8 +17,9 @@
     if ([@"checkPermissions" isEqualToString:call.method]) {
       result(@(YES));
     } else if ([@"preloadNativeExpress" isEqualToString:call.method]) {
-        [GDTManager sharedManager].arguments = call.arguments;
-        [[GDTManager sharedManager] loadAd];
+        [[GDTManager sharedManager] loadAdWith:call.arguments callback:^(BOOL res) {
+             NSLog(@"preload gdtad%@ dict%@",@(res), [GDTManager sharedManager].gdtViewDict);
+        }];
       result(@(YES));
     } else {
       result(FlutterMethodNotImplemented);
