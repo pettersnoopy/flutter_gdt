@@ -15,4 +15,13 @@ public class Consts {
     public static int dp2px(Context context, int dp) {
         return (int) ((float) dp * context.getResources().getDisplayMetrics().density);
     }
+
+    public static class FunctionName {
+        public static final String RENDER_SPLASH_AD = "renderSplashAd";
+    }
+
+    public static class ParamKey {
+        public static final String APP_ID = "appId";
+        public static final String POSITION_ID = "positionId";
+    }
 }

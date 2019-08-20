@@ -8,6 +8,7 @@ import android.os.Build;
 
 import com.example.flutter_gdt.managers.NativeExpressManager;
 import com.example.flutter_gdt.views.FlutterNativeExpressViewFactory;
+import com.example.flutter_gdt.views.FlutterSplashAdViewFactory;
 import com.qq.e.ads.nativ.ADSize;
 
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public class FlutterGdtPlugin implements MethodCallHandler {
         channel.setMethodCallHandler(new FlutterGdtPlugin(registrar.activity()));
         registrar.platformViewRegistry().registerViewFactory("flutter_gdt_native_express_ad_view",
                 new FlutterNativeExpressViewFactory(new StandardMessageCodec(), registrar.activity(), registrar.messenger()));
+        registrar.platformViewRegistry().registerViewFactory("flutter_gdt_splash_ad_view",
+                new FlutterSplashAdViewFactory(new StandardMessageCodec(), registrar.activity(), registrar.messenger()));
     }
 
     @Override
