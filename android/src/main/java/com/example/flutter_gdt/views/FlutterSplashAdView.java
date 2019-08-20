@@ -1,8 +1,12 @@
 package com.example.flutter_gdt.views;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewParent;
+import android.view.Window;
 import android.widget.LinearLayout;
 
 import com.example.flutter_gdt.Consts;
@@ -10,6 +14,7 @@ import com.qq.e.ads.splash.SplashAD;
 import com.qq.e.ads.splash.SplashADListener;
 import com.qq.e.comm.util.AdError;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import io.flutter.plugin.platform.PlatformView;
@@ -41,6 +46,31 @@ public class FlutterSplashAdView implements PlatformView, MethodChannel.MethodCa
 
     @Override
     public View getView() {
+        // 为了让platformView的背景透明
+        if (mLinearLayout != null) {
+            mLinearLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ViewParent parent = mLinearLayout.getParent();
+                        if (parent == null) {
+                            return;
+                        }
+                        while (parent.getParent() != null) {
+                            parent = parent.getParent();
+                        }
+                        Object decorView = parent.getClass().getDeclaredMethod("getView").invoke(parent);
+                        final Field windowField = decorView.getClass().getDeclaredField("mWindow");
+                        windowField.setAccessible(true);
+                        final Window window = (Window) windowField.get(decorView);
+                        windowField.setAccessible(false);
+                        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    } catch(Exception e) {
+                        // log the exception
+                    }
+                }
+            });
+        }
         return mLinearLayout;
     }
 
@@ -76,12 +106,10 @@ public class FlutterSplashAdView implements PlatformView, MethodChannel.MethodCa
                 @Override
                 public void onNoAD(AdError adError) {
                     try {
-                        result.success(true);
+                        result.success(false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
-                    System.out.println(adError.getErrorMsg());
                 }
 
                 @Override
@@ -101,7 +129,11 @@ public class FlutterSplashAdView implements PlatformView, MethodChannel.MethodCa
                 }
             }, 3000);
         } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                result.success(false);
+            } catch (Exception e1) {
+                e.printStackTrace();
+            }
         }
     }
 }

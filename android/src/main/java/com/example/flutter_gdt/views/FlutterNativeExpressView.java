@@ -1,8 +1,12 @@
 package com.example.flutter_gdt.views;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.Window;
 import android.widget.LinearLayout;
 
 import com.example.flutter_gdt.Consts;
@@ -12,6 +16,7 @@ import com.qq.e.ads.nativ.ADSize;
 import com.qq.e.ads.nativ.NativeExpressAD;
 import com.qq.e.ads.nativ.NativeExpressADView;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 
 import io.flutter.plugin.platform.PlatformView;
@@ -45,6 +50,31 @@ public class FlutterNativeExpressView implements PlatformView, MethodChannel.Met
 
   @Override
   public View getView() {
+    // 为了让platformView的背景透明
+    if (mLinearLayout != null) {
+      mLinearLayout.post(new Runnable() {
+        @Override
+        public void run() {
+          try {
+              ViewParent parent = mLinearLayout.getParent();
+              if (parent == null) {
+                  return;
+              }
+              while (parent.getParent() != null) {
+                  parent = parent.getParent();
+              }
+              Object decorView = parent.getClass().getDeclaredMethod("getView").invoke(parent);
+              final Field windowField = decorView.getClass().getDeclaredField("mWindow");
+              windowField.setAccessible(true);
+              final Window window = (Window) windowField.get(decorView);
+              windowField.setAccessible(false);
+              window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+          } catch(Exception e) {
+            // log the exception
+          }
+        }
+      });
+    }
     return mLinearLayout;
   }
 
