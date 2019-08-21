@@ -45,7 +45,7 @@ class FlutterGdtSplashView extends StatelessWidget {
       viewType: "flutter_gdt_splash_ad_view",
       creationParams: <String, dynamic>{
         "appId": appId,
-        "placementId": positionId,
+        "positionId": positionId,
       },
       creationParamsCodec: new StandardMessageCodec(),
       onPlatformViewCreated: (int id) async {

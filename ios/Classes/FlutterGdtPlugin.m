@@ -1,6 +1,7 @@
 #import "FlutterGdtPlugin.h"
 #import "GDTExpressAd.h"
 #import "GDTManager.h"
+#import "GDTStartSplashAd.h"
 
 @implementation FlutterGdtPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -11,6 +12,7 @@
     [registrar addMethodCallDelegate:instance channel:channel];
 
     [registrar registerViewFactory:[[GDTExpressAd alloc] initWithMessenger:registrar.messenger] withId:@"flutter_gdt_native_express_ad_view"];
+    [registrar registerViewFactory:[[GDTStartSplashAd alloc] initWithMessenger:registrar.messenger] withId:@"flutter_gdt_splash_ad_view"];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
