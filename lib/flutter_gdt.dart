@@ -16,6 +16,13 @@ class FlutterGdt {
       "preloadCount": param.preloadCount ?? 1,
     });
   }
+
+  static Future<void> loadSplash(NativeExpressParam param) async {
+    await _channel.invokeMethod("loadActivitySplashAd", {
+      "appId": param.appId,
+      "positionId": param.positionId,
+    });
+  }
 }
 
 class NativeExpressParam {
@@ -25,5 +32,10 @@ class NativeExpressParam {
   int ptHeight;
   int preloadCount;
 
-  NativeExpressParam({this.appId, this.positionId, this.ptWidth, this.ptHeight, this.preloadCount});
+  NativeExpressParam(
+      {this.appId,
+      this.positionId,
+      this.ptWidth,
+      this.ptHeight,
+      this.preloadCount});
 }
