@@ -37,9 +37,8 @@
 #pragma mark - 开屏广告
 - (void)loadSplashAdWith:(NSDictionary*)dic
 {
-    NSString *appId = appId = dic[@"appId"]; //[[NSUserDefaults standardUserDefaults] objectForKey:@"GDTSplashAppId"];
+    NSString *appId = dic[@"appId"]; //[[NSUserDefaults standardUserDefaults] objectForKey:@"GDTSplashAppId"];
     NSString *placementId = dic[@"positionId"];
-//[[NSUserDefaults standardUserDefaults] objectForKey:@"GDTSplashPlacementId"];
     if (appId == nil || [appId isEqualToString:@""] || placementId == nil || [placementId isEqualToString:@""]){
         return;
     }
